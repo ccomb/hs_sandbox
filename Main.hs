@@ -2,7 +2,7 @@
 import Network.Wai (Response, Application, responseLBS, responseFile, rawPathInfo)
 import Network.HTTP.Types (status404, status200)
 import Network.Wai.Handler.Warp (run)
-import Data.ByteString.Char8 (pack, unpack)
+import Data.ByteString.Char8 (unpack)
 import qualified Data.ByteString as BS (take)
 
 
