@@ -2,9 +2,12 @@
 import Network.Wai
 import Network.HTTP.Types
 import Network.Wai.Handler.Warp (run)
-import qualified Data.ByteString.Lazy.Char8 as C (putStrLn)
-import Data.ByteString.Char8 (unpack)
+import Data.ByteString.Char8 (pack, unpack)
 import qualified Data.ByteString as BS (take)
+
+
+port :: Int
+port = 8080
 
 
 websocket :: Response
@@ -38,5 +41,5 @@ app request respond =
 
 main :: IO ()
 main = do
-    C.putStrLn "Listening on localhost:8080"
-    run 8080 app
+    putStrLn $ "Listening on localhost:" ++ show port
+    run port app
