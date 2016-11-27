@@ -20,14 +20,14 @@ data EventType =
 data EventGroup =
     EventGroup
     { eventGroupName :: String
-    , eventGroupGroups :: EventGroup }
+    , eventGroupGroups :: [EventGroup] }
 
 
 data Event =
     Event
     { eventName :: String
     , eventType :: EventType
-    , eventGroups :: EventGroup
+    , eventGroups :: [EventGroup]
     , eventDate :: UTCTime
     , eventQuantity :: Rational
     , eventResourceType :: ResourceType

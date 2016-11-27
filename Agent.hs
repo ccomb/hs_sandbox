@@ -9,11 +9,11 @@ data AgentType =
 data AgentGroup =
     AgentGroup
     { agentGroupName :: String
-    , agentGroupGroups :: AgentGroup }
+    , agentGroupGroups :: [AgentGroup] }
 
 
 data Agent =
     Agent
     { agentName :: String
     , agentType :: AgentType
-    , agentGroups :: AgentGroup }
+    , agentGroups :: [AgentGroup] }

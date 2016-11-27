@@ -9,7 +9,7 @@ data ResourceType =
 data ResourceGroup =
     ResourceGroup
     { groupName :: String
-    , groupGroups :: ResourceGroup }
+    , groupGroups :: [ResourceGroup] }
 
 
 data Resource =
