@@ -4,6 +4,9 @@ import Network.HTTP.Types (status404, status200)
 import Network.Wai.Handler.Warp (run)
 import Data.ByteString.Char8 (unpack)
 import qualified Data.ByteString as BS (take)
+import Action
+import Data.UUID.V4 (nextRandom)
+import Data.Time (UTCTime, getCurrentTime)
 
 
 port :: Int
@@ -13,6 +16,7 @@ port = 8080
 websocket :: Response
 websocket = responseLBS status200 [] "websocket"
 
+-- dispatch $ Action getCurrentTime (show nextRandom) "Entity" Create "truc"
 
 notFound :: Response
 notFound = responseLBS status404 [] "404 Not Found"
@@ -25,6 +29,7 @@ serveFile filename =
     []
     ("../elm" ++ filename)
     Nothing
+
 
 
 app :: Application
