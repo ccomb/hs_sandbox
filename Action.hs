@@ -8,6 +8,7 @@ import System.IO (appendFile)
 import Data.Aeson (encode, ToJSON)
 import Data.ByteString.Lazy.Char8 (unpack, pack)
 import GHC.Generics
+import Data.Maybe
 
 data Entity = Resource | Event | Agent
 
@@ -16,9 +17,9 @@ data Type = Create | Delete | Update
 
 data Action =
     Action
-    { actionTime :: UTCTime
-    , actionUuid ::  String
-    , actionModel :: Model
+    { actionTime :: Maybe UTCTime
+    , actionUuid ::  Maybe String
+    , actionModel :: String
     , actionType :: Type
     , actionPayload :: Payload
     } deriving (Generic, Show)
@@ -26,9 +27,7 @@ data Action =
 
 instance ToJSON Action
 instance ToJSON Payload
-instance ToJSON Model
 instance ToJSON Type
-
 
 newtype Model = Model String
     deriving (Generic, Show)
@@ -47,10 +46,11 @@ data EventStore =
 {- store :: String -> 
 store dbname = -}
 
+stampAction :: Action -> UTCTime -> String -> Action
+stampAction action time uuid = action { actionUuid = Just $ show uuid, actionTime = Just time }
+
 {- dispatch actions with pattern matching on the eventstore and the action -}
-dispatch :: Action -> IO ()
-dispatch action = do
-    uuid <- nextRandom
-    time <- getCurrentTime
-    a <- return action { actionUuid = show uuid, actionTime = time }
-    appendFile "store.db" $ unpack $ encode a
+dispatch :: Action -> UTCTime -> String -> IO ()
+dispatch action time uuid = appendFile "store.db" $ (unpack $ encode $ stampAction action time uuid) ++ "\n"
+
+

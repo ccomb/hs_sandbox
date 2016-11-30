@@ -31,9 +31,11 @@ serveFile filename =
     Nothing
 
 
-
 app :: Application
-app request respond =
+app request respond = do
+    uuid <- fmap show nextRandom
+    time <- getCurrentTime
+    dispatch (Action Nothing Nothing "Entity" Create (Payload "truc")) time uuid
     respond $ case prefix of
         "/" -> serveFile "/index.html"
         "/ws" -> websocket
