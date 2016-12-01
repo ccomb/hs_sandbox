@@ -31,6 +31,9 @@ serveFile filename =
     Nothing
 
 
+action :: Action
+action = Action Nothing Nothing Create Resource (Payload "truc")
+
 app :: Application
 app request respond = do
     response <- let
@@ -41,7 +44,7 @@ app request respond = do
             "/ws" -> do
                 uuid <- fmap show nextRandom
                 time <- getCurrentTime
-                dispatch (Action Nothing Nothing "Entity" Create (Payload "truc")) time uuid
+                dispatch action time uuid
                 return websocket
             "/static" -> return $ serveFile $ unpack path
             _ -> return notFound

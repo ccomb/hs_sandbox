@@ -10,7 +10,11 @@ import Data.ByteString.Lazy.Char8 (unpack, pack)
 import GHC.Generics
 import Data.Maybe
 
-data Entity = Resource | Event | Agent
+data Entity =
+      Resource
+    | Event
+    | Agent
+    deriving (Generic, Show)
 
 data Type = Create | Delete | Update
     deriving (Generic, Show)
@@ -19,8 +23,8 @@ data Action =
     Action
     { actionTime :: Maybe UTCTime
     , actionUuid ::  Maybe String
-    , actionModel :: String
     , actionType :: Type
+    , actionModel :: Entity
     , actionPayload :: Payload
     } deriving (Generic, Show)
 
@@ -28,9 +32,7 @@ data Action =
 instance ToJSON Action
 instance ToJSON Payload
 instance ToJSON Type
-
-newtype Model = Model String
-    deriving (Generic, Show)
+instance ToJSON Entity
 
 data Payload = Payload String
     deriving (Generic, Show)
@@ -51,6 +53,8 @@ stampAction action time uuid = action { actionUuid = Just $ show uuid, actionTim
 
 {- dispatch actions with pattern matching on the eventstore and the action -}
 dispatch :: Action -> UTCTime -> String -> IO ()
-dispatch action time uuid = appendFile "store.db" $ (unpack $ encode $ stampAction action time uuid) ++ "\n"
+dispatch action time uuid =
+    let content = (unpack $ encode $ stampAction action time uuid) ++ "\n"
+        in appendFile "store.db" content
 
 
