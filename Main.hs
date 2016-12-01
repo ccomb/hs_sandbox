@@ -33,18 +33,19 @@ serveFile filename =
 
 app :: Application
 app request respond = do
-    case prefix of
-        "/" -> respond $ serveFile "/index.html"
-        "/ws" -> do
-            uuid <- fmap show nextRandom
-            time <- getCurrentTime
-            dispatch (Action Nothing Nothing "Entity" Create (Payload "truc")) time uuid
-            respond websocket
-        "/static" -> respond $ serveFile $ unpack path
-        _ -> respond notFound
-        where
-            path = rawPathInfo request
-            prefix = BS.take 7 path
+    response <- let
+        path = rawPathInfo request
+        prefix = BS.take 7 path
+        in case prefix of
+            "/" -> return $ serveFile "/index.html"
+            "/ws" -> do
+                uuid <- fmap show nextRandom
+                time <- getCurrentTime
+                dispatch (Action Nothing Nothing "Entity" Create (Payload "truc")) time uuid
+                return websocket
+            "/static" -> return $ serveFile $ unpack path
+            _ -> return notFound
+    respond response
 
 
 main :: IO ()
