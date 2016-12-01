@@ -1,14 +1,12 @@
 {-# LANGUAGE DeriveGeneric #-}
 module Action where
 
-import Data.UUID (UUID)
-import Data.UUID.V4 (nextRandom)
-import Data.Time (UTCTime, getCurrentTime)
-import System.IO (appendFile)
+import Data.Time (UTCTime)
+import System.IO ()
 import Data.Aeson (encode, ToJSON)
-import Data.ByteString.Lazy.Char8 (unpack, pack)
+import Data.ByteString.Lazy.Char8 (unpack)
 import GHC.Generics
-import Data.Maybe
+import Data.Maybe ()
 
 data Entity =
       Resource
@@ -37,24 +35,19 @@ instance ToJSON Entity
 data Payload = Payload String
     deriving (Generic, Show)
 
-data EventStoreType = ApendOnlyFile | Other
+data EventStore = FileEventStore FilePath | Other
 
-data EventStore =
-    EventStore
-    { eventStoreName :: String
-    , eventStoreType :: EventStoreType
-    }
-
-{- store :: String -> 
-store dbname = -}
+getFile :: EventStore -> FilePath
+getFile (FileEventStore f) = f
+getFile (Other) = ""
 
 stampAction :: Action -> UTCTime -> String -> Action
 stampAction action time uuid = action { actionUuid = Just $ show uuid, actionTime = Just time }
 
-{- dispatch actions with pattern matching on the eventstore and the action -}
-dispatch :: Action -> UTCTime -> String -> IO ()
-dispatch action time uuid =
+{- todo dispatch actions with pattern matching on the eventstore and the action -}
+dispatch :: EventStore -> Action -> UTCTime -> String -> IO ()
+dispatch eventstore action time uuid =
     let content = (unpack $ encode $ stampAction action time uuid) ++ "\n"
-        in appendFile "store.db" content
+    in appendFile (getFile eventstore) content
 
 

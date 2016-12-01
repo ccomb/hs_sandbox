@@ -6,7 +6,7 @@ import Data.ByteString.Char8 (unpack)
 import qualified Data.ByteString as BS (take)
 import Action
 import Data.UUID.V4 (nextRandom)
-import Data.Time (UTCTime, getCurrentTime)
+import Data.Time (getCurrentTime)
 
 
 port :: Int
@@ -31,6 +31,9 @@ serveFile filename =
     Nothing
 
 
+storefile :: String
+storefile = "store.db"
+
 action :: Action
 action = Action Nothing Nothing Create Resource (Payload "truc")
 
@@ -44,7 +47,7 @@ app request respond = do
             "/ws" -> do
                 uuid <- fmap show nextRandom
                 time <- getCurrentTime
-                dispatch action time uuid
+                dispatch (FileEventStore storefile) action time uuid
                 return websocket
             "/static" -> return $ serveFile $ unpack path
             _ -> return notFound
